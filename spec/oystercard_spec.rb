@@ -1,7 +1,8 @@
 require 'oystercard'
 
 describe Oystercard do
-  let(:station) { double(:station) }
+  let(:entry_station) { double(:station) }
+  let(:exit_station) { double(:station) }
 
 
   it 'has a balance of zero' do
@@ -22,33 +23,38 @@ describe Oystercard do
 
   it "can detect when oystercard has touched in" do
     subject.top_up(5)
-    expect(subject.touch_in(station)) .to eq true
+    expect(subject.touch_in(entry_station)) .to eq true
   end
 
   it "can detect when you have touched out" do
-    expect(subject.touch_out) .to eq false
+    expect(subject.touch_out(exit_station)) .to eq false
   end
 
   it "fails to allow touch in if insufficient funds" do
-    expect { subject.touch_in(station) } .to raise_error "insufficient funds"
+    expect { subject.touch_in(entry_station) } .to raise_error "insufficient funds"
   end
 
   it "touch out reduced balance by minimum fare" do
     subject.top_up(11)
-    subject.touch_in(station)
-    expect { subject.touch_out} .to change {subject.balance } .by(-Oystercard::MINIMUM_FARE)
+    subject.touch_in(entry_station)
+    expect { subject.touch_out(exit_station)} .to change {subject.balance } .by(-Oystercard::MINIMUM_FARE)
   end
 
   it "records the entry station on touch in" do
     subject.top_up(11)
-    subject.touch_in(station)
-    expect(subject.entry_station) .to eq(station)
+    subject.touch_in(entry_station)
+    expect(subject.entry_station) .to eq(entry_station)
   end
   it "sets the entry station to nil on touch out" do
     subject.top_up(11)
-    subject.touch_in(station)
-    subject.touch_out
+    subject.touch_in(entry_station)
+    subject.touch_out(exit_station)
     expect(subject.entry_station) .to eq(nil)
   end
+
+  it "stores a history of multiple journey"
+    subject.touch_in(entry_station)
+    subject.touch_out(exit_station)
+    expect(subject.exit_station) .to eq(exit_station)
 
 end

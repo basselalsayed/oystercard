@@ -1,8 +1,10 @@
 require 'oystercard'
+require 'journey'
 
 describe Oystercard do
   let(:entry_station) { double(:station) }
   let(:exit_station) { double(:station) }
+  #let(:journey) { double(:journey), ::MINIMUM_FARE = 2 }
 
 
   it 'has a balance of zero' do
@@ -21,15 +23,6 @@ describe Oystercard do
     expect { subject.top_up(Oystercard::MAXIMUM_BALANCE + 1) } .to raise_error "Top Up above maximum"
   end
 
-  it "can detect when oystercard has touched in" do
-    subject.top_up(5)
-    expect(subject.touch_in(entry_station)) .to eq true
-  end
-
-  it "can detect when you have touched out" do
-    expect(subject.touch_out(exit_station)) .to eq false
-  end
-
   it "fails to allow touch in if insufficient funds" do
     expect { subject.touch_in(entry_station) } .to raise_error "insufficient funds"
   end
@@ -37,24 +30,41 @@ describe Oystercard do
   it "touch out reduced balance by minimum fare" do
     subject.top_up(11)
     subject.touch_in(entry_station)
-    expect { subject.touch_out(exit_station)} .to change {subject.balance } .by(-Oystercard::MINIMUM_FARE)
+    expect { subject.touch_out(exit_station)} .to change {subject.balance }
   end
 
   it "records the entry station on touch in" do
     subject.top_up(11)
     subject.touch_in(entry_station)
-    expect(subject.entry_station) .to eq(entry_station)
+    expect(subject.history_of_journeys) .not_to be_empty
   end
-  it "sets the entry station to nil on touch out" do
+
+  #it "records the exit station on touch out" do
+  #  subject.top_up(11)
+  #  subject.touch_in(entry_station)
+  #  history_before = []
+  #  history_before.append(subject.history_of_journeys.last)
+  #  p history_before
+  #  subject.touch_out(exit_station)
+  #  p history_before
+  #  expect(subject.history_of_journeys).not_to eq(history_before)
+#  end
+
+  it "records the exit station on touch out" do
     subject.top_up(11)
     subject.touch_in(entry_station)
     subject.touch_out(exit_station)
-    expect(subject.entry_station) .to eq(nil)
+    expect(subject.history_of_journeys.last.complete?).to be true
   end
 
-  it "stores a history of multiple journey"
+
+  it "stores a history of multiple journey" do
+    subject.top_up(11)
     subject.touch_in(entry_station)
     subject.touch_out(exit_station)
-    expect(subject.exit_station) .to eq(exit_station)
+    subject.touch_in(entry_station)
+    subject.touch_out(exit_station)
+    expect(subject.history_of_journeys.length) .to eq(2)
+  end
 
 end

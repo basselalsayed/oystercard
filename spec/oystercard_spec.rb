@@ -27,7 +27,7 @@ describe Oystercard do
     expect { subject.touch_in(entry_station) } .to raise_error "insufficient funds"
   end
 
-  it "touch out reduced balance by minimum fare" do
+  it "touch out reduces balance" do
     subject.top_up(11)
     subject.touch_in(entry_station)
     expect { subject.touch_out(exit_station)} .to change {subject.balance }

@@ -58,7 +58,7 @@ private
     if @history_of_journeys.last.complete?
       start_journey(nil)
     end
-    @history_of_journeys << @history_of_journeys.pop.end(exit_station)
+    @history_of_journeys.last.end(exit_station)
 
   end
 

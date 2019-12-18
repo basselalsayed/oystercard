@@ -27,13 +27,13 @@ end
 
   def touch_in(entry_station)
     raise "insufficient funds" if insufficient_touch_in?
-    update_journey(entry_station, nil)
+    start_journey(entry_station, nil)
     in_journey?
   end
 
   def touch_out(exit_station)
     deduct(MINIMUM_FARE)
-    update_journey(nil, exit_station)
+    end_journey(nil, exit_station)
     in_journey?
   end
 
@@ -56,13 +56,20 @@ private
     !!@entry_station
   end
 
-  def update_journey(entry_station, exit_station)
-    @journey_hash = @history_of_journeys.last
-    if @journey_hash[:entry_station] != nil && @journey_hash[:exit_station] = nil && exit_station != nil
-      journey_hash.update(){:exit_station => exit_station})
-      @history_of_journeys.last = journey_hash
-    else
-      @history_of_journeys << journey_hash{entry_station, exit_station}
+  def start_journey(entry_station)
+    @journey_hash = {:entry_station => entry_station, :exit_station => nil}
+    @history_of_journeys << @journey_hash
+  end
+
+  def end_journey(exit_station)
+    last_journey = @history_of_journeys.last
+      if last_journey[:exit_station] = nil
+        last_journey = {:exit_station => exit_station}
+        @history_of_journeys.last = last_journey
+      else
+        new_last_journey = { :entry_station => nil :exit_station => exit_station }
+        @history_of_journeys << new_last_journey
+      end
   end
 
 

@@ -13,7 +13,7 @@ class JourneyLog
   end
   
   def finish(exit_station)
-    @journeys.last.end(exit_station)
+    current_journey.end(exit_station)
   end
 
   def journeys
@@ -28,8 +28,11 @@ class JourneyLog
   end
 
   def current_journey
-    return @journeys.last if !@journeys.last.complete?
-    start(nil)
+    if  journeys.any? && !@journeys.last.complete?
+       return @journeys.last  
+    else
+    start(nil).last
+    end
   end
  
 

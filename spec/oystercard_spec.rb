@@ -29,7 +29,7 @@ describe Oystercard do
     it "records the entry station" do
       subject.top_up(11)
       subject.touch_in(entry_station1)
-      expect(subject.history_of_journeys) .not_to be_empty
+      expect(subject.journey_log.journeys) .not_to be_empty
     end
     it "reduces balance by 6 when it follows a previous touch in" do
       subject.top_up(11)
@@ -51,23 +51,23 @@ describe Oystercard do
     end
 
     it "reduces balance by 6 when it follows a touch out" do
-      subject.top_up(11)
+      subject.top_up(20)
       subject.touch_in(entry_station1)
       subject.touch_out(exit_station1)
       expect { subject.touch_out(exit_station2)} .to change {subject.balance }.by(-6)
-    end
+      end
 
     it "ends the most recent journey if it has a touch in" do
       subject.top_up(11)
       subject.touch_in(entry_station1)
-      expect(subject.history_of_journeys.last).to receive(:end)
+      expect(subject.journey_log.journeys.last).to receive(:end)
       subject.touch_out(exit_station1)
     end
 
     it "creates a new journey if done for first time without touch in" do
       subject.top_up(11)
       subject.touch_out(exit_station1)
-      expect(subject.history_of_journeys) .not_to be_empty
+      expect(subject.journey_log.journeys) .not_to be_empty
     end
 
     it "creates a new journey if most recent journey does not have a touch in" do
@@ -75,7 +75,7 @@ describe Oystercard do
       subject.touch_in(entry_station1)
       subject.touch_out(exit_station1)
       subject.touch_out(exit_station2)
-      expect(subject.history_of_journeys.length) .to eq(2)
+      expect(subject.journey_log.journeys.length).to eq(2)
     end
 
     it "works for successive journeys" do
@@ -84,7 +84,7 @@ describe Oystercard do
       subject.touch_out(exit_station1)
       subject.touch_in(entry_station2)
       subject.touch_out(exit_station2)
-      expect(subject.history_of_journeys.length) .to eq(2)
+      expect(subject.journey_log.journeys.length).to eq(2)
     end
   end
 end

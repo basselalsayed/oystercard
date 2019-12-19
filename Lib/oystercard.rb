@@ -1,9 +1,9 @@
 require_relative 'journey'
+require_relative 'journey_log'
 
 class Oystercard
 
-  attr_reader :balance
-  attr_accessor :history_of_journeys
+  attr_reader :balance, :journey_log
 
   MAXIMUM_BALANCE = 90
   MINIMUM_TOUCH_IN = 2
@@ -11,7 +11,6 @@ class Oystercard
   def initialize(balance = 0, maximum_balance = MAXIMUM_BALANCE)
     @balance = balance
     @maximum_balance = maximum_balance
-    @history_of_journeys = []
     @journey_log = JourneyLog.new(Journey)
   end
 
@@ -25,12 +24,12 @@ class Oystercard
     if @journey_log.journeys.any?
       deduct(@journey_log.journeys.last.calc_fare) if in_journey?
     end
-    start_journey(entry_station)
+    @journey_log.start(entry_station)
   end
 
   def touch_out(exit_station)
-    end_journey(exit_station)
-    deduct(@history_of_journeys.last.calc_fare)
+    @journey_log.finish(exit_station)
+    deduct(@journey_log.journeys.last.calc_fare)
   end
 
 
@@ -52,15 +51,15 @@ private
     !@journey_log.journeys.last.complete?
   end
 
-  def start_journey(entry_station)
-    @journey_log.start(entry_station)
-  end
+  # def start_journey(entry_station)
+  #   @journey_log.start(entry_station)
+  # end
 
-  def end_journey(exit_station)
-    start_journey(nil) if @journey_log.journeys.empty?
-    start_journey(nil) if !in_journey?
-    @journey_log.finish(exit_station)
-  end
+  # def end_journey(exit_station)
+  #   start_journey(nil) if @journey_log.journeys.empty?
+  #   start_journey(nil) if !in_journey?
+  #   @journey_log.finish(exit_station)
+  # end
 
 
 end

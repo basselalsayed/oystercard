@@ -1,4 +1,4 @@
-
+require_relative 'journey'
 
 class Oystercard
 
@@ -6,7 +6,7 @@ class Oystercard
   attr_accessor :history_of_journeys
 
   MAXIMUM_BALANCE = 90
-  MINIMUM_TOUCH_IN = 1
+  MINIMUM_TOUCH_IN = 2
 
   def initialize(balance = 0, maximum_balance = MAXIMUM_BALANCE)
     @balance = balance
@@ -59,7 +59,6 @@ private
     start_journey(nil) if @history_of_journeys.empty?
     start_journey(nil) if @history_of_journeys.last.complete?
     @history_of_journeys.last.end(exit_station)
-
   end
 
 

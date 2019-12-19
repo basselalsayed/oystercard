@@ -45,6 +45,11 @@ describe Oystercard do
       expect { subject.touch_out(exit_station1)} .to change {subject.balance }.by(-2)
     end
 
+    it "reduces balance by 6 if touching out for first time without touch in" do
+      subject.top_up(11)
+      expect { subject.touch_out(exit_station1)} .to change {subject.balance }.by(-6)
+    end
+
     it "reduces balance by 6 when it follows a touch out" do
       subject.top_up(11)
       subject.touch_in(entry_station1)

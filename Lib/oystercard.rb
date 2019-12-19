@@ -22,7 +22,7 @@ class Oystercard
   def touch_in(entry_station)
     raise "insufficient funds" if insufficient_touch_in?
     if @history_of_journeys.any?
-      deduct(@history_of_journeys.last.calc_fare) unless @history_of_journeys.last.complete?
+      deduct(@history_of_journeys.last.calc_fare) unless !in_journey?
     end
     start_journey(entry_station)
   end
@@ -48,7 +48,7 @@ private
   end
 
   def in_journey?
-    !!@entry_station
+    !@history_of_journeys.last.complete?
   end
 
   def start_journey(entry_station)
@@ -57,7 +57,7 @@ private
 
   def end_journey(exit_station)
     start_journey(nil) if @history_of_journeys.empty?
-    start_journey(nil) if @history_of_journeys.last.complete?
+    start_journey(nil) if !in_journey?
     @history_of_journeys.last.end(exit_station)
   end
 

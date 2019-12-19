@@ -1,28 +1,29 @@
-require_relative 'station'
+
 
 class Oystercard
 
-attr_reader :balance
-attr_accessor :history_of_journeys
+  attr_reader :balance
+  attr_accessor :history_of_journeys
 
-MAXIMUM_BALANCE = 90
-MINIMUM_TOUCH_IN = 1
+  MAXIMUM_BALANCE = 90
+  MINIMUM_TOUCH_IN = 1
 
-def initialize(balance = 0, maximum_balance = MAXIMUM_BALANCE)
-  @balance = balance
-  @maximum_balance = maximum_balance
-  @history_of_journeys = []
-end
-
+  def initialize(balance = 0, maximum_balance = MAXIMUM_BALANCE)
+    @balance = balance
+    @maximum_balance = maximum_balance
+    @history_of_journeys = []
+  end
 
   def top_up(amount)
     raise "Top Up above maximum" if balance_exceeded?(amount)
     @balance += amount
   end
 
-
   def touch_in(entry_station)
     raise "insufficient funds" if insufficient_touch_in?
+    if @history_of_journeys.any?
+      deduct(@history_of_journeys.last.calc_fare) unless @history_of_journeys.last.complete?
+    end
     start_journey(entry_station)
   end
 
@@ -55,9 +56,8 @@ private
   end
 
   def end_journey(exit_station)
-    if @history_of_journeys.last.complete?
-      start_journey(nil)
-    end
+    start_journey(nil) if @history_of_journeys.empty?
+    start_journey(nil) if @history_of_journeys.last.complete?
     @history_of_journeys.last.end(exit_station)
 
   end

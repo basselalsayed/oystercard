@@ -6,8 +6,6 @@ describe Oystercard do
   let(:entry_station2) { double(:station) }
   let(:exit_station2) { double(:station) }
 
-  
-
   describe '#initialize' do
     it 'creates oystercard with balance of 0 by default' do
       expect(subject.balance).to eq(0)
@@ -33,13 +31,25 @@ describe Oystercard do
       subject.touch_in(entry_station1)
       expect(subject.history_of_journeys) .not_to be_empty
     end
+    it "reduces balance by 6 when it follows a previous touch in" do
+      subject.top_up(11)
+      subject.touch_in(entry_station1)
+      expect { subject.touch_in(entry_station2)} .to change {subject.balance }.by(-6)
+    end
   end
 
   describe '#touch_out' do
-    it "reduces balance by the amount calculated by cal_fare" do
+    it "reduces balance by 2 when it follows a touch in" do
       subject.top_up(11)
       subject.touch_in(entry_station1)
       expect { subject.touch_out(exit_station1)} .to change {subject.balance }.by(-2)
+    end
+
+    it "reduces balance by 6 when it follows a touch out" do
+      subject.top_up(11)
+      subject.touch_in(entry_station1)
+      subject.touch_out(exit_station1)
+      expect { subject.touch_out(exit_station2)} .to change {subject.balance }.by(-6)
     end
 
     it "ends the most recent journey if it has a touch in" do

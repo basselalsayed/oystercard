@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require_relative 'journey'
 
 class JourneyLog
   attr_reader :journey_class
 
-  def initialize(journey_class)
+  def initialize(journey_class = Journey)
     @journey_class = journey_class
     create_journeys
   end
@@ -17,10 +19,9 @@ class JourneyLog
   end
 
   def journeys
-    @journeys
+    @journeys.clone
   end
 
- 
   private
 
   def create_journeys
@@ -28,14 +29,10 @@ class JourneyLog
   end
 
   def current_journey
-    if  journeys.any? && !@journeys.last.complete?
-       return @journeys.last  
+    if @journeys.any? && !@journeys.last.complete?
+      @journeys.last 
     else
-    start(nil).last
+      start(nil).last
     end
   end
- 
-
-
-
 end
